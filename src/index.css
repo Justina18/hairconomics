@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+@theme {
+  --color-cotton: #ffdadd;
+  --color-bubble: #f58ac6;
+  --color-electric: #f00087;
+  --color-navy: #202b72;
+  --color-paper: #fff9f8;
+  --color-ink: #201923;
+  --color-chrome: #c9c9d4;
+
+  --font-sans: "DM Sans", system-ui, sans-serif;
+  --font-display: "Bricolage Grotesque", "Arial Black", sans-serif;
+  --font-hand: "Caveat", "Comic Sans MS", cursive;
+
+  --animate-float: float 7s ease-in-out infinite;
+  @keyframes float {
+    50% {
+      translate: 0 -8px;
+    }
+  }
+}
+
+html {
+  scroll-padding-top: env(safe-area-inset-top, 0px);
+}
+
+body {
+  @apply bg-paper font-sans text-ink;
+}
+
+.page-turn-next {
+  transform-origin: left center;
+  animation: page-turn-next 600ms ease forwards;
+}
+
+.page-turn-prev {
+  transform-origin: right center;
+  animation: page-turn-prev 600ms ease forwards;
+}
+
+.y2k-card {
+  border: 2px solid var(--color-electric);
+  box-shadow: 4px 5px 0 var(--color-bubble), 8px 8px 0 var(--color-cotton);
+}
+
+.y2k-card:hover {
+  transform: translateY(-3px) rotate(-1deg);
+}
+
+.y2k-sparkle {
+  animation: y2k-twinkle 1.8s ease-in-out infinite;
+}
+
+@keyframes y2k-twinkle {
+  50% { transform: scale(1.25) rotate(15deg); opacity: .55; }
+}
+
+@keyframes page-turn-next {
+  from { transform: rotateY(0); }
+  to { transform: rotateY(-180deg); }
+}
+
+@keyframes page-turn-prev {
+  from { transform: rotateY(0); }
+  to { transform: rotateY(180deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-turn-next, .page-turn-prev {
+    animation: page-fade 200ms ease forwards;
+  }
+}
+
+@keyframes page-fade {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+button {
+  cursor: pointer;
+}

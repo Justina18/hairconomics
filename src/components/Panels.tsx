@@ -1,6 +1,37 @@
+import { useState, type ReactNode } from "react";
 import { EFFORT, price, type Style } from "../data";
 import { pictureFor } from "./Card";
 import EmailForm from "./EmailForm";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+
+function Accordion({ title, children, open = false }: { title: string; children: ReactNode; open?: boolean }) {
+  const [expanded, setExpanded] = useState(open);
+  const prefersReducedMotion = useReducedMotion();
+  return (
+    <div className="rounded-lg border border-navy/15 bg-white/70 p-4">
+      <button
+        onClick={() => setExpanded((value) => !value)}
+        aria-expanded={expanded}
+        className="flex w-full items-center justify-between text-left font-bold text-navy focus:outline-none focus:ring-2 focus:ring-electric"
+      >
+        {title}
+        <span className={`text-xl text-electric transition-transform duration-200 ${expanded ? "rotate-45" : ""}`}>+</span>
+      </button>
+      <AnimatePresence initial={false}>
+        {expanded && (
+          <motion.div
+            initial={prefersReducedMotion ? false : { height: 0, opacity: 0 }}
+            animate={prefersReducedMotion ? undefined : { height: "auto", opacity: 1, transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] } }}
+            exit={prefersReducedMotion ? { opacity: 0 } : { height: 0, opacity: 0, transition: { duration: 0.16 } }}
+            className="overflow-hidden"
+          >
+            <div className="pt-3">{children}</div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
 
 export function StyleDetail({ s, saved, onSave }: { s: Style; saved: boolean; onSave: () => void }) {
   const facts: [string, string][] = [
@@ -22,8 +53,7 @@ export function StyleDetail({ s, saved, onSave }: { s: Style; saved: boolean; on
       </div>
       <p className="mt-4 text-base leading-relaxed">{s.blurb}</p>
       <div className="mt-5 space-y-2">
-        <details open className="group rounded-lg border border-navy/15 bg-white/70 p-4">
-          <summary className="cursor-pointer list-none font-bold text-navy marker:hidden">At a glance <span className="float-right text-electric group-open:rotate-45">+</span></summary>
+        <Accordion title="At a glance" open>
           <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
             {facts.map(([k, v]) => (
               <div key={k} className="rounded-md border border-dashed border-electric bg-cotton/60 p-2 text-[13px]">
@@ -35,17 +65,15 @@ export function StyleDetail({ s, saved, onSave }: { s: Style; saved: boolean; on
           <div className="mt-3 flex flex-wrap gap-1.5">
             {s.vibes.split("").map((v) => <span key={v} className="rounded-full bg-cotton px-2.5 py-1 text-xs font-medium text-navy">{vibes[v as keyof typeof vibes]}</span>)}
           </div>
-        </details>
-        <details className="group rounded-lg border border-navy/15 bg-white/70 p-4">
-          <summary className="cursor-pointer list-none font-bold text-navy marker:hidden">Price notes <span className="float-right text-electric group-open:rotate-45">+</span></summary>
+        </Accordion>
+        <Accordion title="Price notes">
           <p className="mt-3 text-sm leading-relaxed text-ink/70">The displayed {price(s)} is an estimate for planning. {s.note ? `This range is ${s.note}.` : "The price basis is not specified, so confirm what is included before booking."} Hair bundles, attachments, colouring and accessories may cost extra.</p>
-        </details>
+        </Accordion>
         {(s.tip || s.lasts) && (
-          <details className="group rounded-lg border border-navy/15 bg-white/70 p-4">
-            <summary className="cursor-pointer list-none font-bold text-navy marker:hidden">Care and wear <span className="float-right text-electric group-open:rotate-45">+</span></summary>
+          <Accordion title="Care and wear">
             {s.lasts && <p className="mt-3 text-sm"><b>Estimated lifespan:</b> {s.lasts}</p>}
             {s.tip && <p className="mt-2 font-hand text-2xl text-electric">{s.tip}</p>}
-          </details>
+          </Accordion>
         )}
       </div>
     </>

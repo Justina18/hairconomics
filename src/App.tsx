@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import Dialog from "./components/Dialog";
 import { SaveNudge, StyleDetail } from "./components/Panels";
 import type { Style } from "./data";
@@ -7,6 +8,7 @@ import Landing from "./views/Landing";
 import Quiz from "./views/Quiz";
 import Results from "./views/Results";
 import Updates from "./views/Updates";
+import { menuVariants, pageVariants } from "./motion";
 
 export type Route = "home" | "quiz" | "results" | "browse" | "updates";
 type Panel = { kind: "style"; s: Style } | { kind: "save" } | null;
@@ -19,6 +21,7 @@ const fromHash = (): Route => {
 const NAV: [string, Route][] = [["home", "home"], ["pick my hair", "quiz"], ["all styles", "browse"], ["updates", "updates"]];
 
 export default function App() {
+  const prefersReducedMotion = useReducedMotion();
   const [route, setRoute] = useState<Route>(fromHash);
   const [menu, setMenu] = useState(false);
   const [results, setResults] = useState<Style[]>([]);
@@ -53,25 +56,51 @@ export default function App() {
         </button>
       </header>
 
-      {menu && (
-        <nav className="fixed inset-0 z-40 flex flex-col justify-center gap-1.5 bg-electric p-6" aria-label="Menu">
-          {NAV.map(([label, r]) => (
-            <button key={r} onClick={() => go(r)} className="text-left font-display text-[clamp(40px,12vw,84px)] font-extrabold lowercase leading-none tracking-tighter text-white">
-              {label}
-            </button>
-          ))}
-        </nav>
-      )}
+      <AnimatePresence>
+        {menu && (
+          <motion.nav
+            variants={menuVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            className="fixed inset-0 z-40 flex flex-col justify-center gap-1.5 bg-electric p-6"
+            aria-label="Menu"
+          >
+            {NAV.map(([label, r], i) => (
+              <motion.button
+                key={r}
+                initial={{ opacity: 0, x: -12 }}
+                animate={{ opacity: 1, x: 0, transition: { delay: i * 0.04, duration: 0.22 } }}
+                exit={{ opacity: 0, x: -8 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => go(r)}
+                className="text-left font-display text-[clamp(40px,12vw,84px)] font-extrabold lowercase leading-none tracking-tighter text-white"
+              >
+                {label}
+              </motion.button>
+            ))}
+          </motion.nav>
+        )}
+      </AnimatePresence>
 
       {route === "home" ? (
         <Landing go={go} />
       ) : (
-        <main className="mx-auto min-h-screen max-w-5xl px-4 pb-16 pt-20">
-          {route === "quiz" && <Quiz onDone={(r) => { setResults(r); go("results"); }} />}
-          {route === "results" && <Results results={results} saved={saved} onOpen={onOpen} onSave={toggle} go={go} />}
-          {route === "browse" && <Browse saved={saved} onOpen={onOpen} onSave={toggle} />}
-          {route === "updates" && <Updates onOpen={onOpen} />}
-        </main>
+        <AnimatePresence mode="wait">
+          <motion.main
+            key={route}
+            variants={pageVariants}
+            initial={prefersReducedMotion ? false : "initial"}
+            animate={prefersReducedMotion ? undefined : "animate"}
+            exit={prefersReducedMotion ? { opacity: 0 } : "exit"}
+            className="mx-auto min-h-screen max-w-5xl px-4 pb-16 pt-20"
+          >
+            {route === "quiz" && <Quiz onDone={(r) => { setResults(r); go("results"); }} />}
+            {route === "results" && <Results results={results} saved={saved} onOpen={onOpen} onSave={toggle} go={go} />}
+            {route === "browse" && <Browse saved={saved} onOpen={onOpen} onSave={toggle} />}
+            {route === "updates" && <Updates onOpen={onOpen} />}
+          </motion.main>
+        </AnimatePresence>
       )}
 
       <Dialog open={panel !== null} onClose={close}>

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import Card from "../components/Card";
 import { BROWSE_STYLES, type Style } from "../data";
 
@@ -10,13 +11,15 @@ function Chips<T extends string | number>({ items, value, onPick }: {
   return (
     <div className="my-3.5 flex flex-wrap gap-2">
       {items.map(([label, v]) => (
-        <button
+        <motion.button
           key={label}
+          whileHover={{ y: -2 }}
+          whileTap={{ scale: 0.97 }}
           onClick={() => onPick(value === v ? null : v)}
           className={`rounded-full border-2 px-4 py-2.5 text-sm font-medium ${value === v ? "border-electric bg-electric text-white" : "border-navy text-navy"}`}
         >
           {label}
-        </button>
+        </motion.button>
       ))}
     </div>
   );

@@ -1,4 +1,6 @@
 import { EFFORT, price, type Style } from "../data";
+import { motion, useReducedMotion } from "framer-motion";
+import { fadeUpVariants } from "../motion";
 
 type Props = { s: Style; i: number; saved: boolean; onOpen: () => void; onSave: () => void };
 
@@ -32,10 +34,16 @@ export const pictureFor = (s: Style) => pictureFiles[s.name];
 
 export default function Card({ s, i, saved, onOpen, onSave }: Props) {
   const picture = pictureFor(s);
+  const prefersReducedMotion = useReducedMotion();
   const vibes = { s: "Soft", b: "Bold", n: "Neat", l: "Lowkey" } as const;
 
   return (
-    <div
+    <motion.div
+      custom={i % 10}
+      variants={fadeUpVariants}
+      initial={prefersReducedMotion ? false : "hidden"}
+      animate={prefersReducedMotion ? undefined : "visible"}
+      whileTap={prefersReducedMotion ? undefined : { scale: 0.99 }}
       className={`relative flex min-h-[440px] flex-col overflow-hidden rounded-xl border border-navy/10 bg-white text-left shadow-[0_8px_24px_rgba(32,43,114,0.12)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_14px_30px_rgba(32,43,114,0.18)] ${s.y2k ? "y2k-card" : ""}`}
       style={{ rotate: `${((i % 3) - 1) * 0.6}deg` }}
     >
@@ -81,6 +89,6 @@ export default function Card({ s, i, saved, onOpen, onSave }: Props) {
           </button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

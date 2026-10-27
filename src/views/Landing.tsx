@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import type { Route } from "../App";
+import { motion } from "framer-motion";
 
 type Photo = { style: CSSProperties; back?: boolean; delay?: string };
 
@@ -17,15 +18,18 @@ export default function Landing({ go }: { go: (r: Route) => void }) {
   return (
     <section className="relative h-svh overflow-hidden">
       {photos.map((p, i) => (
-        <div
+        <motion.div
           key={i}
+          initial={{ opacity: 0, y: 12, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1, transition: { delay: i * 0.06, duration: 0.35, ease: [0.22, 1, 0.36, 1] } }}
+          whileHover={{ scale: 1.04, zIndex: 30 }}
           className={`absolute bg-white p-1.5 pb-4 shadow-lg shadow-bubble/50 transition-transform hover:z-30 hover:scale-105 motion-safe:animate-float ${p.back ? "z-0" : "z-20"}`}
           style={{ ...p.style, animationDelay: p.delay }}
         >
           <span aria-hidden className="absolute -top-2 left-1/2 h-4 w-12 -translate-x-1/2 -rotate-3 bg-chrome/70" />
           {/* swap this for <img src="/photos/xyz.jpg" alt="" className="size-full object-cover" /> */}
           <div className="size-full bg-linear-to-br from-bubble to-chrome" />
-        </div>
+        </motion.div>
       ))}
 
       <div className="pointer-events-none absolute inset-x-0 top-[15%] z-10 px-[3vw]">
@@ -43,12 +47,12 @@ export default function Landing({ go }: { go: (r: Route) => void }) {
       </div>
 
       <div className="absolute inset-x-4 bottom-[calc(22px+env(safe-area-inset-bottom,0px))] z-40 flex flex-wrap items-center gap-2.5">
-        <button onClick={() => go("quiz")} className="rounded-full bg-electric px-6 py-4 font-bold text-white">
+        <motion.button whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }} onClick={() => go("quiz")} className="rounded-full bg-electric px-6 py-4 font-bold text-white">
           so, what are we making? →
-        </button>
-        <button onClick={() => go("browse")} className="rounded-full border-2 border-navy px-6 py-3.5 font-bold text-navy">
+        </motion.button>
+        <motion.button whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }} onClick={() => go("browse")} className="rounded-full border-2 border-navy px-6 py-3.5 font-bold text-navy">
           just let me browse
-        </button>
+        </motion.button>
       </div>
     </section>
   );

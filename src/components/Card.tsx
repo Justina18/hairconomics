@@ -28,40 +28,59 @@ const pictureFiles: Record<string, string> = {
   "Pixie cut": new URL("../pictures/pixie cut short.jfif", import.meta.url).href,
 };
 
+export const pictureFor = (s: Style) => pictureFiles[s.name];
+
 export default function Card({ s, i, saved, onOpen, onSave }: Props) {
-  const picture = pictureFiles[s.name];
+  const picture = pictureFor(s);
+  const vibes = { s: "Soft", b: "Bold", n: "Neat", l: "Lowkey" } as const;
 
   return (
     <div
-      role="button"
-      tabIndex={0}
-      onClick={onOpen}
-      onKeyDown={(e) => e.key === "Enter" && onOpen()}
-      className={`relative bg-white p-2 pb-3 text-left shadow-md shadow-bubble/40 ${s.y2k ? "y2k-card" : ""}`}
-      style={{ rotate: `${((i % 3) - 1) * 1.6}deg` }}
+      className={`relative flex min-h-[440px] flex-col overflow-hidden rounded-xl border border-navy/10 bg-white text-left shadow-[0_8px_24px_rgba(32,43,114,0.12)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_14px_30px_rgba(32,43,114,0.18)] ${s.y2k ? "y2k-card" : ""}`}
+      style={{ rotate: `${((i % 3) - 1) * 0.6}deg` }}
     >
-      <span className="absolute -right-1.5 top-3.5 rotate-3 bg-electric px-2 py-0.5 text-xs font-bold text-white">
-        {price(s)}
-      </span>
-      {s.y2k && <span aria-hidden="true" className="y2k-sparkle absolute left-1 top-1 text-xl text-electric">✦</span>}
-      {picture ? (
-        <img src={picture} alt="" className="mb-2 h-32 w-full object-cover" />
-      ) : (
-        <div className={`mb-2 h-32 bg-linear-to-br from-bubble ${i % 2 ? "to-chrome" : "to-cotton"}`} />
-      )}
-      <span className="mb-1 inline-block rounded-full bg-cotton px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-navy">{s.category}</span>
-      {s.y2k && <span className="ml-1 inline-block -rotate-2 rounded-full bg-electric px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">y2k</span>}
-      <h3 className="font-display text-lg font-extrabold lowercase leading-none tracking-tight">{s.name}</h3>
-      <p className="mt-1 text-[13px] text-ink/60">
-        {s.time ? `${s.time} · ` : ""}{EFFORT[s.effort].toLowerCase()} effort
-      </p>
-      <button
-        aria-label={saved ? "Unsave" : "Save"}
-        onClick={(e) => { e.stopPropagation(); onSave(); }}
-        className="absolute bottom-2 right-2 text-2xl text-electric"
-      >
-        {saved ? "♥" : "♡"}
-      </button>
+      <div className="relative">
+        {picture ? (
+          <img src={picture} alt={`${s.name} hairstyle`} className="h-56 w-full object-cover" />
+        ) : (
+          <div className={`h-56 bg-linear-to-br from-bubble ${i % 2 ? "to-chrome" : "to-cotton"}`} aria-label={`${s.name} hairstyle`} />
+        )}
+        {s.y2k && <span aria-hidden="true" className="y2k-sparkle absolute left-3 top-3 text-2xl text-white">✦</span>}
+        {s.y2k && <span className="absolute bottom-3 left-3 rounded-full bg-electric px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-white">y2k archive</span>}
+      </div>
+      <div className="flex flex-1 flex-col p-5">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <span className="text-[10px] font-bold uppercase tracking-[.16em] text-electric">{s.category}</span>
+            <h3 className="mt-1 font-display text-2xl font-extrabold lowercase leading-[.95] tracking-tight">{s.name}</h3>
+          </div>
+          <span className="shrink-0 rounded-full bg-electric px-2.5 py-1 text-xs font-bold text-white">{price(s)}</span>
+        </div>
+        <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-ink/70">{s.blurb}</p>
+        <div className="mt-4 flex flex-wrap gap-1.5">
+          <span className="rounded-full border border-navy/20 px-2.5 py-1 text-xs font-medium text-navy">{EFFORT[s.effort]} effort</span>
+          {s.vibes.split("").map((v) => (
+            <span key={v} className="rounded-full bg-cotton px-2.5 py-1 text-xs font-medium text-navy">{vibes[v as keyof typeof vibes]}</span>
+          ))}
+          {s.lasts && <span className="rounded-full border border-navy/20 px-2.5 py-1 text-xs font-medium text-navy">{s.lasts}</span>}
+        </div>
+        <p className="mt-3 text-[11px] leading-relaxed text-ink/55">
+          Estimated range{ s.note ? ` · ${s.note}` : " · confirm inclusions before booking" }
+        </p>
+        <div className="mt-auto flex items-center justify-between gap-3 pt-5">
+          <button onClick={onOpen} className="rounded-full bg-navy px-4 py-2.5 text-sm font-bold text-white transition hover:bg-electric focus:outline-none focus:ring-2 focus:ring-electric focus:ring-offset-2">
+            View details
+          </button>
+          <button
+            aria-label={saved ? `Unsave ${s.name}` : `Save ${s.name}`}
+            aria-pressed={saved}
+            onClick={onSave}
+            className="min-h-11 min-w-11 rounded-full border border-electric text-2xl leading-none text-electric transition hover:bg-cotton focus:outline-none focus:ring-2 focus:ring-electric focus:ring-offset-2"
+          >
+            {saved ? "♥" : "♡"}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

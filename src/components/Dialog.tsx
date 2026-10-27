@@ -18,7 +18,7 @@ export default function Dialog({ open, onClose, children }: Props) {
       onClick={(e) => e.target === e.currentTarget && onClose()}
       className="fixed inset-0 z-60 flex items-center justify-center bg-navy/60 p-4"
     >
-      <div className="relative max-h-[88vh] w-full max-w-md overflow-auto rounded-md bg-paper p-6">
+      <div className="relative max-h-[92vh] w-full max-w-3xl overflow-auto rounded-xl bg-paper p-5 shadow-2xl sm:p-8">
         <button aria-label="Close" onClick={onClose} className="absolute right-3 top-2 text-3xl">×</button>
         {children}
       </div>

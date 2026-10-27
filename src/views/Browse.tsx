@@ -96,14 +96,14 @@ export default function Browse({ saved, onOpen, onSave }: Props) {
       }}>
         {list.length === 0 ? <p className="font-hand text-2xl text-electric">nothing matches. loosen a filter, babe.</p> : (
           <>
-            <div className="relative min-h-[650px] perspective-[1200px]">
-              <div className="absolute inset-0 grid grid-cols-[repeat(auto-fill,minmax(155px,1fr))] content-start gap-5 rounded-md border-2 border-dashed border-bubble/40 bg-paper p-3 shadow-[0_8px_24px_var(--color-bubble)]">
+            <div className="relative perspective-[1200px]">
+              <div className="grid min-h-[470px] grid-cols-1 content-start gap-7 rounded-md border-2 border-dashed border-bubble/40 bg-paper p-4 shadow-[0_8px_24px_var(--color-bubble)] sm:grid-cols-2 sm:min-h-[920px] lg:grid-cols-3 lg:min-h-[930px]">
                 {visibleStyles.map((s, i) => (
                   <Card key={`${s.name}-${i}`} s={s} i={BROWSE_STYLES.indexOf(s)} saved={!!saved[s.name]} onOpen={() => onOpen(s)} onSave={() => onSave(s.name)} />
                 ))}
               </div>
               {turning && (
-                <div onAnimationEnd={finishTurn} className={`absolute inset-0 grid grid-cols-[repeat(auto-fill,minmax(155px,1fr))] content-start gap-5 rounded-md border-2 border-dashed border-bubble/40 bg-paper p-3 shadow-[0_8px_24px_var(--color-bubble)] transform-3d backface-hidden ${turning === "next" ? "page-turn-next" : "page-turn-prev"}`}>
+                <div onAnimationEnd={finishTurn} className={`absolute inset-0 grid grid-cols-1 content-start gap-7 rounded-md border-2 border-dashed border-bubble/40 bg-paper p-4 shadow-[0_8px_24px_var(--color-bubble)] transform-3d backface-hidden sm:grid-cols-2 lg:grid-cols-3 ${turning === "next" ? "page-turn-next" : "page-turn-prev"}`}>
                   {pageStyles(safePage).map((s, i) => (
                     <Card key={`${s.name}-${i}`} s={s} i={BROWSE_STYLES.indexOf(s)} saved={!!saved[s.name]} onOpen={() => onOpen(s)} onSave={() => onSave(s.name)} />
                   ))}
